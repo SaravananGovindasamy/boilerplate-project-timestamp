@@ -14,26 +14,23 @@ app.use(cors({optionsSuccessStatus: 200}));  // some legacy browsers choke on 20
 app.use(express.static('public'));
 
 // http://expressjs.com/en/starter/basic-routing.html
-
 // Route to handle requests for timestamp conversion
 app.get("/api/:date?", function(req, res) {
   let dateInput = req.params.date;
-
-  // If no date is provided, use current time
+  
+  // Use current time when no date is provided
   if (!dateInput) {
     dateInput = new Date();
   } else {
-    // Attempt to parse the input as a Unix timestamp
-    const timestamp = parseInt(dateInput);
-    if (!isNaN(timestamp)) {
-      dateInput = new Date(timestamp);
+    // Handling UNIX timestamp using parseInt
+    if (!isNaN(dateInput)) {
+      dateInput = new Date(parseInt(dateInput));
     } else {
-      // Attempt to parse the input as a date string
       dateInput = new Date(dateInput);
     }
   }
 
-  // Check if the date is valid
+  // For valid date, respond with unix & utc, else respond with error
   if (isNaN(dateInput.getTime())) {
     res.json({ error: "Invalid Date" });
   } else {
@@ -48,7 +45,6 @@ app.get("/api/:date?", function(req, res) {
 app.get("/", function (req, res) {
   res.sendFile(__dirname + '/views/index.html');
 });
-
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
